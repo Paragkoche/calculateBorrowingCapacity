@@ -403,7 +403,7 @@ function App() {
                       maxLoan: calculateBorrowingCapacity(
                         formData.numberOfApplicants,
                         formData.numberOfDependant,
-                        6.27162,
+                        6.2716,
                         formData.loanTerm,
                         formData.incomeType,
                         formData.frequency,
@@ -420,7 +420,7 @@ function App() {
                       maxLoan: calculateBorrowingCapacity(
                         formData.numberOfApplicants,
                         formData.numberOfDependant,
-                        6.273,
+                        6.2727,
                         formData.loanTerm,
                         formData.incomeType,
                         formData.frequency,
