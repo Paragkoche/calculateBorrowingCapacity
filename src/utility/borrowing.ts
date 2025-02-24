@@ -424,12 +424,7 @@ const calculateExpenses = (
   }, 0);
 };
 
-const calculateLoan = (
-  payment: number,
-  interestRate: number,
-  term: number,
-  paymentFrequency: number
-) => {
+const calculateLoan = (payment: number, interestRate: number, term: number) => {
   const periods = { Weekly: 52, Fortnightly: 26, Monthly: 12 };
   const ratePerPeriod = interestRate / (periods.Monthly * 100);
   const numPayments = term * periods.Monthly;
@@ -483,7 +478,7 @@ export const calculateBorrowingCapacity = (
     totalExpenses -
     Math.max(livingExpense, estimatedLivingExpense);
   const maxLoanAmount = Math.max(
-    calculateLoan(surplusMonthlyIncome, interestRate + 3, loanTerm, 0),
+    calculateLoan(surplusMonthlyIncome, interestRate + 3, loanTerm),
     0
   );
   const repaymentAmount = calculatePayment(
