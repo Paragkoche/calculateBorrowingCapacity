@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { calculateBorrowingCapacity } from "./utility/borrowing";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -23,6 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from "./components/ui/table";
+import { Hem, textLevels } from "./utility/hem_cal";
+import { loanRepayments } from "./utility/loan_repayment";
+import { NextSurplus } from "./utility/Net_Surplus";
 
 type Frequency = "Weekly" | "Fortnightly" | "Monthly" | "Annual";
 const frequencies: Frequency[] = ["Weekly", "Fortnightly", "Monthly", "Annual"];
@@ -223,44 +226,13 @@ function App() {
                 <TableHead>Bank Name</TableHead>
                 <TableHead>Max Loan</TableHead>
                 <TableHead>Interest Rate</TableHead>
+                <TableHead>HEM</TableHead>
+                <TableHead>Loan Repayment</TableHead>
+                <TableHead>SURP</TableHead>
               </TableHeader>
               <TableBody>
                 {formData.rawSalary !== 0 ? (
                   [
-                    {
-                      bankName: "anz",
-                      bankInterest: 6.1931279,
-                      maxLoan: calculateBorrowingCapacity(
-                        formData.numberOfApplicants,
-                        formData.numberOfDependant,
-                        6.1931279,
-                        formData.loanTerm,
-                        formData.incomeType,
-                        formData.frequency,
-                        formData.rawSalary,
-                        formData.otherIncome,
-                        formData.loanRepayments,
-                        formData.expenseFrequency,
-                        formData.estimatedLivingExpense
-                      ).maxLoan,
-                    },
-                    {
-                      bankName: "bendigo bank",
-                      bankInterest: 6.2226,
-                      maxLoan: calculateBorrowingCapacity(
-                        formData.numberOfApplicants,
-                        formData.numberOfDependant,
-                        6.2226,
-                        formData.loanTerm,
-                        formData.incomeType,
-                        formData.frequency,
-                        formData.rawSalary,
-                        formData.otherIncome,
-                        formData.loanRepayments,
-                        formData.expenseFrequency,
-                        formData.estimatedLivingExpense
-                      ).maxLoan,
-                    },
                     {
                       bankName: "nab",
                       bankInterest: 6.231,
@@ -277,160 +249,23 @@ function App() {
                         formData.expenseFrequency,
                         formData.estimatedLivingExpense
                       ).maxLoan,
+                      hem: Hem("nab", formData.rawSalary, "S0").toFixed(2),
+                      loanRepayment: loanRepayments(
+                        "nab",
+                        500000,
+                        formData.loanTerm
+                      ).toFixed(2),
+                      surp: NextSurplus(
+                        textLevels(formData.rawSalary, "Annual").taxIncExclAdj,
+                        loanRepayments("nab", 500000, formData.loanTerm),
+                        Hem("nab", formData.rawSalary, "S0") <
+                          formData.estimatedLivingExpense
+                          ? formData.estimatedLivingExpense
+                          : Hem("nab", formData.rawSalary, "S0"),
+                        0,
+                        0
+                      ).toFixed(2),
                     },
-                    {
-                      bankName: "macquarie",
-                      bankInterest: 6.19,
-                      maxLoan: calculateBorrowingCapacity(
-                        formData.numberOfApplicants,
-                        formData.numberOfDependant,
-                        6.19,
-                        formData.loanTerm,
-                        formData.incomeType,
-                        formData.frequency,
-                        formData.rawSalary,
-                        formData.otherIncome,
-                        formData.loanRepayments,
-                        formData.expenseFrequency,
-                        formData.estimatedLivingExpense
-                      ).maxLoan,
-                    },
-                    {
-                      bankName: "ING",
-                      bankInterest: 6.1726,
-                      maxLoan: calculateBorrowingCapacity(
-                        formData.numberOfApplicants,
-                        formData.numberOfDependant,
-                        6.1726,
-                        formData.loanTerm,
-                        formData.incomeType,
-                        formData.frequency,
-                        formData.rawSalary,
-                        formData.otherIncome,
-                        formData.loanRepayments,
-                        formData.expenseFrequency,
-                        formData.estimatedLivingExpense
-                      ).maxLoan,
-                    },
-                    // {
-                    //   bankName: "athena",
-                    //   bankInterest: 6.29,
-                    //   maxLoan: calculateBorrowingCapacity(
-                    //     formData.numberOfApplicants,
-                    //     formData.numberOfDependant,
-                    //     6.29,
-                    //     formData.loanTerm,
-                    //     formData.incomeType,
-                    //     formData.frequency,
-                    //     formData.rawSalary,
-                    //     formData.otherIncome,
-                    //     formData.loanRepayments,
-                    //     formData.expenseFrequency,
-                    //     formData.estimatedLivingExpense
-                    //   ).maxLoan,
-                    // },
-                    // {
-                    //   bankName: "liberty",
-                    //   bankInterest: 7.29,
-                    //   maxLoan: calculateBorrowingCapacity(
-                    //     formData.numberOfApplicants,
-                    //     formData.numberOfDependant,
-                    //     7.29,
-                    //     formData.loanTerm,
-                    //     formData.incomeType,
-                    //     formData.frequency,
-                    //     formData.rawSalary,
-                    //     formData.otherIncome,
-                    //     formData.loanRepayments,
-                    //     formData.expenseFrequency,
-                    //     formData.estimatedLivingExpense
-                    //   ).maxLoan,
-                    // },
-                    // {
-                    //   bankName: "firstmac",
-                    //   bankInterest: 6.49,
-                    //   maxLoan: calculateBorrowingCapacity(
-                    //     formData.numberOfApplicants,
-                    //     formData.numberOfDependant,
-                    //     6.49,
-                    //     formData.loanTerm,
-                    //     formData.incomeType,
-                    //     formData.frequency,
-                    //     formData.rawSalary,
-                    //     formData.otherIncome,
-                    //     formData.loanRepayments,
-                    //     formData.expenseFrequency,
-                    //     formData.estimatedLivingExpense
-                    //   ).maxLoan,
-                    // },
-                    {
-                      bankName: "westpac",
-                      bankInterest: 6.22,
-                      maxLoan: calculateBorrowingCapacity(
-                        formData.numberOfApplicants,
-                        formData.numberOfDependant,
-                        6.22,
-                        formData.loanTerm,
-                        formData.incomeType,
-                        formData.frequency,
-                        formData.rawSalary,
-                        formData.otherIncome,
-                        formData.loanRepayments,
-                        formData.expenseFrequency,
-                        formData.estimatedLivingExpense
-                      ).maxLoan,
-                    },
-                    // {
-                    //   bankName: "st.george",
-                    //   bankInterest: 6.24,
-                    //   maxLoan: calculateBorrowingCapacity(
-                    //     formData.numberOfApplicants,
-                    //     formData.numberOfDependant,
-                    //     6.2729,
-                    //     formData.loanTerm,
-                    //     formData.incomeType,
-                    //     formData.frequency,
-                    //     formData.rawSalary,
-                    //     formData.otherIncome,
-                    //     formData.loanRepayments,
-                    //     formData.expenseFrequency,
-                    //     formData.estimatedLivingExpense
-                    //   ).maxLoan,
-                    // },
-                    // {
-                    //   bankName: "AMP",
-                    //   bankInterest: 6.24,
-                    //   maxLoan: calculateBorrowingCapacity(
-                    //     formData.numberOfApplicants,
-                    //     formData.numberOfDependant,
-                    //     6.2716,
-                    //     formData.loanTerm,
-                    //     formData.incomeType,
-                    //     formData.frequency,
-                    //     formData.rawSalary,
-                    //     formData.otherIncome,
-                    //     formData.loanRepayments,
-                    //     formData.expenseFrequency,
-                    //     formData.estimatedLivingExpense
-                    //   ).maxLoan,
-                    // },
-                    // {
-                    //   bankName: "AdelaideBank",
-                    //   bankInterest: 6.24,
-                    //   maxLoan: calculateBorrowingCapacity(
-                    //     formData.numberOfApplicants,
-                    //     formData.numberOfDependant,
-                    //     6.2727,
-                    //     formData.loanTerm,
-                    //     formData.incomeType,
-                    //     formData.frequency,
-                    //     formData.rawSalary,
-                    //     formData.otherIncome,
-                    //     formData.loanRepayments,
-                    //     formData.expenseFrequency,
-                    //     formData.estimatedLivingExpense
-                    //   ).maxLoan,
-                    // },
                   ].map((v, i) => (
                     <TableRow key={i}>
                       <TableCell>{i + 1}</TableCell>
@@ -440,6 +275,9 @@ function App() {
                       <TableCell>
                         {Math.floor(v.bankInterest * 100) / 100} %
                       </TableCell>
+                      <TableCell>{v.hem}</TableCell>
+                      <TableCell>{v.loanRepayment}</TableCell>
+                      <TableCell>{v.surp}</TableCell>
                     </TableRow>
                   ))
                 ) : (
