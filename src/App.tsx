@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { calculateBorrowingCapacity } from "./utility/borrowing";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -229,6 +229,7 @@ function App() {
                 <TableHead>HEM</TableHead>
                 <TableHead>Loan Repayment</TableHead>
                 <TableHead>SURP</TableHead>
+                <TableHead>DTI</TableHead>
               </TableHeader>
               <TableBody>
                 {formData.rawSalary !== 0 ? (
@@ -278,6 +279,9 @@ function App() {
                       <TableCell>{v.hem}</TableCell>
                       <TableCell>{v.loanRepayment}</TableCell>
                       <TableCell>{v.surp}</TableCell>
+                      <TableCell>
+                        {(500000 / formData.rawSalary).toFixed(2)}
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
