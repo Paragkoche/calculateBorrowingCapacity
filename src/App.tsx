@@ -281,7 +281,7 @@ function App() {
                           NextSurplus(
                             textLevels(formData.rawSalary, "Annual")
                               .taxIncExclAdj,
-                            0,
+                            loanRepayments("amp", 500000, formData.loanTerm),
                             Hem("amp", formData.rawSalary, "S0") <
                               formData.estimatedLivingExpense
                               ? formData.estimatedLivingExpense
@@ -304,7 +304,7 @@ function App() {
                         NextSurplus(
                           textLevels(formData.rawSalary, "Annual")
                             .taxIncExclAdj,
-                          0,
+                          loanRepayments("amp", 500000, formData.loanTerm),
                           Hem("amp", formData.rawSalary, "S0") <
                             formData.estimatedLivingExpense
                             ? formData.estimatedLivingExpense
