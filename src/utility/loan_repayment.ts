@@ -10,10 +10,17 @@ const servicingRate = {
     rate4: Math.max(Working_Servicing_Rate / 100, 0 + HL_Servicing_Buffer),
     rate5: Math.max(Working_Servicing_Rate / 100, 0 + HL_Servicing_Buffer),
   },
+   amp: {
+    rate1: 0.065,
+    rate2: 3.0,
+    rate3: 3.0,
+    rate4: 3.0,
+    rate5: 3.0,
+  },
 };
 
 export const loanRepayments = (
-  bank: "nab",
+  bank: "nab" | "amp",
   loan_amount: number,
   loan_term: number,
   io_term = 0

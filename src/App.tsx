@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { calculateBorrowingCapacity } from "./utility/borrowing";
+import { calculateBorrowingCapacity, calculateLoan } from "./utility/borrowing";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { Input } from "@/components/ui/input";
@@ -230,6 +230,7 @@ function App() {
                 <TableHead>Loan Repayment</TableHead>
                 <TableHead>SURP</TableHead>
                 <TableHead>DTI</TableHead>
+                <TableHead>Net Income</TableHead>
               </TableHeader>
               <TableBody>
                 {formData.rawSalary !== 0 ? (
@@ -237,19 +238,24 @@ function App() {
                     {
                       bankName: "nab",
                       bankInterest: 6.231,
-                      maxLoan: calculateBorrowingCapacity(
-                        formData.numberOfApplicants,
-                        formData.numberOfDependant,
-                        6.231,
-                        formData.loanTerm,
-                        formData.incomeType,
-                        formData.frequency,
-                        formData.rawSalary,
-                        formData.otherIncome,
-                        formData.loanRepayments,
-                        formData.expenseFrequency,
-                        formData.estimatedLivingExpense
-                      ).maxLoan,
+                      maxLoan: Math.max(
+                        calculateLoan(
+                          NextSurplus(
+                            textLevels(formData.rawSalary, "Annual")
+                              .taxIncExclAdj,
+                            loanRepayments("nab", 500000, formData.loanTerm),
+                            Hem("nab", formData.rawSalary, "S0") <
+                              formData.estimatedLivingExpense
+                              ? formData.estimatedLivingExpense
+                              : Hem("nab", formData.rawSalary, "S0"),
+                            0,
+                            0
+                          ),
+                          5.75 + 1,
+                          formData.loanTerm
+                        ),
+                        0
+                      ).toFixed(2),
                       hem: Hem("nab", formData.rawSalary, "S0").toFixed(2),
                       loanRepayment: loanRepayments(
                         "nab",
@@ -267,6 +273,47 @@ function App() {
                         0
                       ).toFixed(2),
                     },
+                    {
+                      bankName: "amp",
+                      bankInterest: 6.231,
+                      maxLoan: Math.max(
+                        calculateLoan(
+                          NextSurplus(
+                            textLevels(formData.rawSalary, "Annual")
+                              .taxIncExclAdj,
+                            0,
+                            Hem("amp", formData.rawSalary, "S0") <
+                              formData.estimatedLivingExpense
+                              ? formData.estimatedLivingExpense
+                              : Hem("amp", formData.rawSalary, "S0"),
+                            0,
+                            0
+                          ),
+                          5.75 + 1,
+                          formData.loanTerm
+                        ),
+                        0
+                      ).toFixed(2),
+                      hem: Hem("amp", formData.rawSalary, "S0").toFixed(2),
+                      loanRepayment: loanRepayments(
+                        "amp",
+                        500000,
+                        formData.loanTerm
+                      ).toFixed(2),
+                      surp: Math.round(
+                        NextSurplus(
+                          textLevels(formData.rawSalary, "Annual")
+                            .taxIncExclAdj,
+                          0,
+                          Hem("amp", formData.rawSalary, "S0") <
+                            formData.estimatedLivingExpense
+                            ? formData.estimatedLivingExpense
+                            : Hem("amp", formData.rawSalary, "S0"),
+                          0,
+                          0
+                        )
+                      ).toFixed(2),
+                    },
                   ].map((v, i) => (
                     <TableRow key={i}>
                       <TableCell>{i + 1}</TableCell>
@@ -281,6 +328,12 @@ function App() {
                       <TableCell>{v.surp}</TableCell>
                       <TableCell>
                         {(500000 / formData.rawSalary).toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {Math.round(
+                          textLevels(formData.rawSalary, "Annual")
+                            .taxIncExclAdj / 12
+                        ).toFixed(3)}
                       </TableCell>
                     </TableRow>
                   ))
