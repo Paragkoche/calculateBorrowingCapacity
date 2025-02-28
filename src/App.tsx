@@ -237,7 +237,7 @@ function App() {
                   [
                     {
                       bankName: "nab",
-                      bankInterest: 6.231,
+                      bankInterest: 5.75,
                       maxLoan: Math.max(
                         calculateLoan(
                           NextSurplus(
@@ -275,7 +275,7 @@ function App() {
                     },
                     {
                       bankName: "amp",
-                      bankInterest: 6.231,
+                      bankInterest: 6.5,
                       maxLoan: Math.max(
                         calculateLoan(
                           NextSurplus(
