@@ -289,7 +289,7 @@ function App() {
                             0,
                             0
                           ),
-                          5.75 + 1,
+                          6.5 + 1,
                           formData.loanTerm
                         ),
                         0
