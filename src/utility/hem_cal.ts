@@ -224,6 +224,8 @@ export const textLevels = (
 };
 
 export const Hem = (bank: "nab" | "amp", income: number, rent: string) => {
+  // console.log(rent.charAt(0));
+  
   let table = HemTable[bank];
 
   let index = 0;
@@ -267,8 +269,11 @@ export const Hem = (bank: "nab" | "amp", income: number, rent: string) => {
   if (386000 < income) {
     index += 1;
   }
+  console.log(parseInt(rent.charAt(1))>3 && bank =="amp");
+  
+  if(parseInt(rent.charAt(1))>3 && bank =="amp"){
+  console.log(index,rent);
 
-  if(parseInt(rent)<3 && bank =="amp"){
     return table[rent.charAt(0)+"Dep"][index]
   }
   return table[rent][index];

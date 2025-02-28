@@ -311,7 +311,7 @@
 import { getLivingExpenseTable } from "./LivingExp";
 import { calculatePayment } from "./RepaymentCal";
 
-const formatter = new Intl.NumberFormat("en-AU", {
+export const formatter = new Intl.NumberFormat("en-AU", {
   style: "currency",
   currency: "AUD",
 });
