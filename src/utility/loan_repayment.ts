@@ -11,11 +11,11 @@ const servicingRate = {
     rate5: Math.max(Working_Servicing_Rate / 100, 0 + HL_Servicing_Buffer),
   },
    amp: {
-    rate1: 0.065,
-    rate2: 3.0,
-    rate3: 3.0,
-    rate4: 3.0,
-    rate5: 3.0,
+    rate1: 0.0619,
+    rate2:  0.0619,
+    rate3:  0.0619,
+    rate4:  0.0619,
+    rate5:  0.0619,
   },
 };
 
