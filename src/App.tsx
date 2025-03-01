@@ -25,6 +25,7 @@ import {
 
 import { Cal } from "./utility/allCals";
 import { Separator } from "./components/ui/separator";
+import { useTheme } from "./components/theme-provider";
 
 type Frequency = "Weekly" | "Fortnightly" | "Monthly" | "Annual";
 const frequencies: Frequency[] = ["Weekly", "Fortnightly", "Monthly", "Annual"];
@@ -61,6 +62,7 @@ function App() {
     estimatedLivingExpense: 0,
     proposed_home_loans: 0,
   });
+  const theme = useTheme();
 
   return (
     <main className="p-6 justify-center w-full flex gap-6">
@@ -435,7 +437,16 @@ function App() {
                   ].map((v, i) => (
                     <TableRow key={i}>
                       <TableCell>{i + 1}</TableCell>
-                      <TableCell>{v.bankName}</TableCell>
+                      <TableCell>
+                        <img
+                          src={`/${v.bankName}${
+                            theme.theme == "dark" || theme.theme == "system"
+                              ? "-white"
+                              : ""
+                          }.png`}
+                          className="h-[24px]"
+                        />
+                      </TableCell>
 
                       <TableCell>{formatter.format(v.data.maxLoan)}</TableCell>
                       <TableCell>
