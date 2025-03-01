@@ -131,7 +131,19 @@ function App() {
                   }))
                 }
               />
+              <Label>Proposed home loans</Label>
+              <Input
+                type="number"
+                value={formData.proposed_home_loans}
+                onChange={(e) =>
+                  setFormData((data) => ({
+                    ...data,
+                    proposed_home_loans: Number(e.target.value),
+                  }))
+                }
+              />
             </div>
+
             <div className="gap-3 flex flex-col">
               <Separator />
               <h4 className="text-lg font-semibold">Income</h4>
@@ -215,17 +227,6 @@ function App() {
                   setFormData((data) => ({
                     ...data,
                     estimatedLivingExpense: Number(e.target.value),
-                  }))
-                }
-              />
-              <Label>Proposed home loans</Label>
-              <Input
-                type="number"
-                value={formData.proposed_home_loans}
-                onChange={(e) =>
-                  setFormData((data) => ({
-                    ...data,
-                    proposed_home_loans: Number(e.target.value),
                   }))
                 }
               />
