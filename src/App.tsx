@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { calculateLoan, formatter } from "./utility/borrowing";
+import { useState } from "react";
+import { formatter } from "./utility/borrowing";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { Input } from "@/components/ui/input";
@@ -28,12 +28,12 @@ import { Separator } from "./components/ui/separator";
 
 type Frequency = "Weekly" | "Fortnightly" | "Monthly" | "Annual";
 const frequencies: Frequency[] = ["Weekly", "Fortnightly", "Monthly", "Annual"];
-const frequencies_data: { [key in Frequency]: number } = {
-  Annual: 1,
-  Monthly: 12,
-  Fortnightly: 26,
-  Weekly: 52,
-};
+// const frequencies_data: { [key in Frequency]: number } = {
+//   Annual: 1,
+//   Monthly: 12,
+//   Fortnightly: 26,
+//   Weekly: 52,
+// };
 type formDataType = {
   numberOfApplicants: 1 | 0;
   numberOfDependant: number;
