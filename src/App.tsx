@@ -346,7 +346,7 @@ function App() {
                     {
                       bankName: "amp",
                       bankInterest: 6.5,
-                      data: Cal("nab", formData, 6.5),
+                      data: Cal("amp", formData, 6.5),
 
                       // maxLoan: formatter.format(
                       //   Math.max(
