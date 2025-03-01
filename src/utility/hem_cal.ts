@@ -151,6 +151,8 @@ export const textLevels = (
   abjIncome = 0
 ) => {
   const annualIncome: number = income * frequencyMap[frequency];
+
+  
   const taxes: {
     [key in string]: number;
   } = {};
@@ -269,7 +271,6 @@ export const Hem = (bank: "nab" | "amp", income: number, rent: string) => {
   if (386000 < income) {
     index += 1;
   }
-  console.log(parseInt(rent.charAt(1))>3 && bank =="amp");
   
   if(parseInt(rent.charAt(1))>3 && bank =="amp"){
   console.log(index,rent);

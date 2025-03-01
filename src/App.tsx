@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { calculateLoan, formatter } from "./utility/borrowing";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -22,18 +22,18 @@ import {
   TableHeader,
   TableRow,
 } from "./components/ui/table";
-import { Hem, textLevels } from "./utility/hem_cal";
-import { loanRepayments } from "./utility/loan_repayment";
-import { NextSurplus } from "./utility/Net_Surplus";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "./components/ui/accordion";
+
+import { Cal } from "./utility/allCals";
+import { Separator } from "./components/ui/separator";
 
 type Frequency = "Weekly" | "Fortnightly" | "Monthly" | "Annual";
 const frequencies: Frequency[] = ["Weekly", "Fortnightly", "Monthly", "Annual"];
+const frequencies_data: { [key in Frequency]: number } = {
+  Annual: 1,
+  Monthly: 12,
+  Fortnightly: 26,
+  Weekly: 52,
+};
 type formDataType = {
   numberOfApplicants: 1 | 0;
   numberOfDependant: number;
@@ -75,196 +75,161 @@ function App() {
             </div>
           </CardHeader>
           <CardContent className="space-6 gap-5 p-6 flex ">
-            <Accordion type="multiple" className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Joint Application</AccordionTrigger>
-                <AccordionContent>
-                  <RadioGroup
-                    value={formData.numberOfApplicants.toString()}
-                    onValueChange={(value) =>
-                      setFormData((data) => ({
-                        ...data,
-                        numberOfApplicants: Number(value) == 0 ? 0 : 1,
-                      }))
-                    }
-                  >
-                    <div className="flex gap-4">
-                      <Label className="flex items-center gap-2">
-                        <RadioGroupItem value="1" /> Yes
-                      </Label>
-                      <Label className="flex items-center gap-2">
-                        <RadioGroupItem value="0" /> No
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>No. of Dependants</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Select
-                      onValueChange={(value) =>
-                        setFormData((data) => ({
-                          ...data,
-                          numberOfDependant: Number(value),
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[...Array(7)].map((_, i) => (
-                          <SelectItem key={i} value={i.toString()}>
-                            {i}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>Loan Term (years)</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Input
-                      type="number"
-                      value={formData.loanTerm}
-                      onChange={(e) =>
-                        setFormData((data) => ({
-                          ...data,
-                          loanTerm: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4">
-                <AccordionTrigger>Income Frequency</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Select
-                      value={formData.frequency}
-                      onValueChange={(value) =>
-                        setFormData((data) => ({
-                          ...data,
-                          frequency: value as Frequency,
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {frequencies.map((freq) => (
-                          <SelectItem key={freq} value={freq}>
-                            {freq}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-5">
-                <AccordionTrigger>Gross Salary</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Input
-                      type="number"
-                      value={formData.rawSalary}
-                      onChange={(e) =>
-                        setFormData((data) => ({
-                          ...data,
-                          rawSalary: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-6">
-                <AccordionTrigger>Other Income</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Input
-                      type="number"
-                      value={formData.otherIncome}
-                      onChange={(e) =>
-                        setFormData((data) => ({
-                          ...data,
-                          otherIncome: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-7">
-                <AccordionTrigger>Expense Frequency</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Select
-                      value={formData.expenseFrequency}
-                      onValueChange={(value) =>
-                        setFormData((data) => ({
-                          ...data,
-                          expenseFrequency: value as Frequency,
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {frequencies.map((freq) => (
-                          <SelectItem key={freq} value={freq}>
-                            {freq}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-8">
-                <AccordionTrigger>Living Expenses</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Input
-                      type="number"
-                      value={formData.estimatedLivingExpense}
-                      onChange={(e) =>
-                        setFormData((data) => ({
-                          ...data,
-                          estimatedLivingExpense: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-9">
-                <AccordionTrigger>Proposed Home Loans</AccordionTrigger>
-                <AccordionContent>
-                  <div className="gap-3 flex flex-col">
-                    <Input
-                      type="number"
-                      value={formData.proposed_home_loans}
-                      onChange={(e) =>
-                        setFormData((data) => ({
-                          ...data,
-                          proposed_home_loans: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <div className="gap-3 flex flex-col">
+              <Label>Joint Application</Label>
+              <RadioGroup
+                value={formData.numberOfApplicants.toString()}
+                onValueChange={(value) =>
+                  setFormData((data) => ({
+                    ...data,
+                    numberOfApplicants: Number(value) == 0 ? 0 : 1,
+                  }))
+                }
+              >
+                <div className="flex gap-4">
+                  <Label className="flex items-center gap-2">
+                    <RadioGroupItem value="1" /> Yes
+                  </Label>
+                  <Label className="flex items-center gap-2">
+                    <RadioGroupItem value="0" /> No
+                  </Label>
+                </div>
+              </RadioGroup>
+
+              <Label>No. of Dependants</Label>
+              <Select
+                onValueChange={(value) =>
+                  setFormData((data) => ({
+                    ...data,
+                    numberOfDependant: Number(value),
+                  }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...Array(7)].map((_, i) => (
+                    <SelectItem key={i} value={i.toString()}>
+                      {i}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Separator />
+              <h4 className="text-lg font-semibold">Loan Details</h4>
+
+              <Label>Loan Term (years)</Label>
+              <Input
+                type="number"
+                value={formData.loanTerm}
+                onChange={(e) =>
+                  setFormData((data) => ({
+                    ...data,
+                    loanTerm: Number(e.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="gap-3 flex flex-col">
+              <Separator />
+              <h4 className="text-lg font-semibold">Income</h4>
+
+              <Label>Income Frequency</Label>
+              <Select
+                value={formData.frequency}
+                onValueChange={(value) =>
+                  setFormData((data) => ({
+                    ...data,
+                    frequency: value as Frequency,
+                  }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {frequencies.map((freq) => (
+                    <SelectItem key={freq} value={freq}>
+                      {freq}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Label>Gross Salary</Label>
+              <Input
+                type="number"
+                value={formData.rawSalary}
+                onChange={(e) =>
+                  setFormData((data) => ({
+                    ...data,
+                    rawSalary: Number(e.target.value),
+                  }))
+                }
+              />
+
+              <Label>Other Income</Label>
+              <Input
+                type="number"
+                value={formData.otherIncome}
+                onChange={(e) =>
+                  setFormData((data) => ({
+                    ...data,
+                    otherIncome: Number(e.target.value),
+                  }))
+                }
+              />
+
+              <Separator />
+              <h4 className="text-lg font-semibold">Expenses</h4>
+
+              <Label>Expense Frequency</Label>
+              <Select
+                value={formData.expenseFrequency}
+                onValueChange={(value) =>
+                  setFormData((data) => ({
+                    ...data,
+                    expenseFrequency: value as Frequency,
+                  }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {frequencies.map((freq) => (
+                    <SelectItem key={freq} value={freq}>
+                      {freq}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Label>Living Expenses</Label>
+              <Input
+                type="number"
+                value={formData.estimatedLivingExpense}
+                onChange={(e) =>
+                  setFormData((data) => ({
+                    ...data,
+                    estimatedLivingExpense: Number(e.target.value),
+                  }))
+                }
+              />
+              <Label>Proposed home loans</Label>
+              <Input
+                type="number"
+                value={formData.proposed_home_loans}
+                onChange={(e) =>
+                  setFormData((data) => ({
+                    ...data,
+                    proposed_home_loans: Number(e.target.value),
+                  }))
+                }
+              />
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -291,193 +256,202 @@ function App() {
                     {
                       bankName: "nab",
                       bankInterest: 5.75,
-                      maxLoan: formatter.format(
-                        Math.max(
-                          calculateLoan(
-                            NextSurplus(
-                              textLevels(formData.rawSalary, formData.frequency)
-                                .taxIncExclAdj,
-                              loanRepayments(
-                                "nab",
-                                formData.proposed_home_loans,
-                                formData.loanTerm
-                              ),
-                              Hem(
-                                "nab",
-                                formData.rawSalary,
-                                `${
-                                  formData.numberOfApplicants == 0 ? "S" : "C"
-                                }${formData.numberOfDependant}`
-                              ) < formData.estimatedLivingExpense
-                                ? formData.estimatedLivingExpense
-                                : Hem(
-                                    "nab",
-                                    formData.rawSalary,
-                                    `${
-                                      formData.numberOfApplicants == 0
-                                        ? "S"
-                                        : "C"
-                                    }${formData.numberOfDependant}`
-                                  ),
-                              0,
-                              0
-                            ),
-                            5.75 + 1,
-                            formData.loanTerm
-                          ),
-                          0
-                        )
-                      ),
-                      hem: formatter.format(
-                        Hem(
-                          "nab",
-                          formData.rawSalary,
-                          `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                            formData.numberOfDependant
-                          }`
-                        )
-                      ),
-                      loanRepayment: formatter.format(
-                        loanRepayments(
-                          "nab",
-                          formData.proposed_home_loans,
-                          formData.loanTerm
-                        )
-                      ),
-                      surp: NextSurplus(
-                        textLevels(formData.rawSalary, formData.frequency)
-                          .taxIncExclAdj,
-                        loanRepayments(
-                          "nab",
-                          formData.proposed_home_loans,
-                          formData.loanTerm
-                        ),
-                        Hem(
-                          "nab",
-                          formData.rawSalary,
-                          `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                            formData.numberOfDependant
-                          }`
-                        ) < formData.estimatedLivingExpense
-                          ? formData.estimatedLivingExpense
-                          : Hem(
-                              "nab",
-                              formData.rawSalary,
-                              `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                                formData.numberOfDependant
-                              }`
-                            ),
-                        0,
-                        0
-                      ).toFixed(2),
+                      data: Cal("nab", formData, 5.75),
+                      // maxLoan: formatter.format(
+                      //   Math.max(
+                      //     calculateLoan(
+                      //       NextSurplus(
+                      //         textLevels(formData.rawSalary, formData.frequency)
+                      //           .taxIncExclAdj,
+                      //         loanRepayments(
+                      //           "nab",
+                      //           formData.proposed_home_loans,
+                      //           formData.loanTerm
+                      //         ),
+                      //         Hem(
+                      //           "nab",
+                      //           formData.rawSalary *
+                      //             frequencies_data[formData.frequency],
+                      //           `${
+                      //             formData.numberOfApplicants == 0 ? "S" : "C"
+                      //           }${formData.numberOfDependant}`
+                      //         ) < formData.estimatedLivingExpense
+                      //           ? formData.estimatedLivingExpense
+                      //           : Hem(
+                      //               "nab",
+                      //               formData.rawSalary *
+                      //                 frequencies_data[formData.frequency],
+                      //               `${
+                      //                 formData.numberOfApplicants == 0
+                      //                   ? "S"
+                      //                   : "C"
+                      //               }${formData.numberOfDependant}`
+                      //             ),
+                      //         0,
+                      //         0
+                      //       ),
+                      //       5.75 + 1,
+                      //       formData.loanTerm
+                      //     ),
+                      //     0
+                      //   )
+                      // ),
+                      // hem: formatter.format(
+                      //   Hem(
+                      //     "nab",
+                      //     formData.rawSalary *
+                      //       frequencies_data[formData.frequency],
+                      //     `${formData.numberOfApplicants == 0 ? "S" : "C"}${
+                      //       formData.numberOfDependant
+                      //     }`
+                      //   )
+                      // ),
+                      // loanRepayment: formatter.format(
+                      //   loanRepayments(
+                      //     "nab",
+                      //     formData.proposed_home_loans,
+                      //     formData.loanTerm
+                      //   )
+                      // ),
+                      // surp: NextSurplus(
+                      //   textLevels(formData.rawSalary, formData.frequency)
+                      //     .taxIncExclAdj,
+                      //   loanRepayments(
+                      //     "nab",
+                      //     formData.proposed_home_loans,
+                      //     formData.loanTerm
+                      //   ),
+                      //   Hem(
+                      //     "nab",
+                      //     formData.rawSalary *
+                      //       frequencies_data[formData.frequency],
+                      //     `${formData.numberOfApplicants == 0 ? "S" : "C"}${
+                      //       formData.numberOfDependant
+                      //     }`
+                      //   ) < formData.estimatedLivingExpense
+                      //     ? formData.estimatedLivingExpense
+                      //     : Hem(
+                      //         "nab",
+                      //         formData.rawSalary *
+                      //           frequencies_data[formData.frequency],
+                      //         `${formData.numberOfApplicants == 0 ? "S" : "C"}${
+                      //           formData.numberOfDependant
+                      //         }`
+                      //       ),
+                      //   0,
+                      //   0
+                      // ).toFixed(2),
                     },
                     {
                       bankName: "amp",
                       bankInterest: 6.5,
-                      maxLoan: formatter.format(
-                        Math.max(
-                          calculateLoan(
-                            NextSurplus(
-                              textLevels(formData.rawSalary, formData.frequency)
-                                .taxIncExclAdj,
-                              loanRepayments(
-                                "amp",
-                                formData.proposed_home_loans,
-                                formData.loanTerm
-                              ),
-                              Hem(
-                                "amp",
-                                formData.rawSalary,
-                                `${
-                                  formData.numberOfApplicants == 0 ? "S" : "C"
-                                }${formData.numberOfDependant}`
-                              ) < formData.estimatedLivingExpense
-                                ? formData.estimatedLivingExpense
-                                : Hem(
-                                    "amp",
-                                    formData.rawSalary,
-                                    `${
-                                      formData.numberOfApplicants == 0
-                                        ? "S"
-                                        : "C"
-                                    }${formData.numberOfDependant}`
-                                  ),
-                              0,
-                              0
-                            ),
-                            6.5 + 1,
-                            formData.loanTerm
-                          ),
-                          0
-                        )
-                      ),
-                      hem: formatter.format(
-                        Hem(
-                          "amp",
-                          formData.rawSalary,
-                          `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                            formData.numberOfDependant
-                          }`
-                        )
-                      ),
-                      loanRepayment: formatter.format(
-                        loanRepayments(
-                          "amp",
-                          formData.proposed_home_loans,
-                          formData.loanTerm
-                        )
-                      ),
-                      surp: Math.round(
-                        NextSurplus(
-                          textLevels(formData.rawSalary, formData.frequency)
-                            .taxIncExclAdj,
-                          loanRepayments(
-                            "amp",
-                            formData.proposed_home_loans,
-                            formData.loanTerm
-                          ),
-                          Hem(
-                            "amp",
-                            formData.rawSalary,
-                            `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                              formData.numberOfDependant
-                            }`
-                          ) < formData.estimatedLivingExpense
-                            ? formData.estimatedLivingExpense
-                            : Hem(
-                                "amp",
-                                formData.rawSalary,
-                                `${
-                                  formData.numberOfApplicants == 0 ? "S" : "C"
-                                }${formData.numberOfDependant}`
-                              ),
-                          0,
-                          0
-                        )
-                      ).toFixed(2),
+                      data: Cal("nab", formData, 6.5),
+
+                      // maxLoan: formatter.format(
+                      //   Math.max(
+                      //     calculateLoan(
+                      //       NextSurplus(
+                      //         textLevels(formData.rawSalary, formData.frequency)
+                      //           .taxIncExclAdj,
+                      //         loanRepayments(
+                      //           "amp",
+                      //           formData.proposed_home_loans,
+                      //           formData.loanTerm
+                      //         ),
+                      //         Hem(
+                      //           "amp",
+                      //           formData.rawSalary *
+                      //             frequencies_data[formData.frequency],
+                      //           `${
+                      //             formData.numberOfApplicants == 0 ? "S" : "C"
+                      //           }${formData.numberOfDependant}`
+                      //         ) < formData.estimatedLivingExpense
+                      //           ? formData.estimatedLivingExpense
+                      //           : Hem(
+                      //               "amp",
+                      //               formData.rawSalary *
+                      //                 frequencies_data[formData.frequency],
+                      //               `${
+                      //                 formData.numberOfApplicants == 0
+                      //                   ? "S"
+                      //                   : "C"
+                      //               }${formData.numberOfDependant}`
+                      //             ),
+                      //         0,
+                      //         0
+                      //       ),
+                      //       6.5 + 1,
+                      //       formData.loanTerm
+                      //     ),
+                      //     0
+                      //   )
+                      // ),
+                      // hem: formatter.format(
+                      //   Hem(
+                      //     "amp",
+                      //     formData.rawSalary,
+                      //     `${formData.numberOfApplicants == 0 ? "S" : "C"}${
+                      //       formData.numberOfDependant
+                      //     }`
+                      //   )
+                      // ),
+                      // loanRepayment: formatter.format(
+                      //   loanRepayments(
+                      //     "amp",
+                      //     formData.proposed_home_loans,
+                      //     formData.loanTerm
+                      //   )
+                      // ),
+                      // surp: Math.round(
+                      //   NextSurplus(
+                      //     textLevels(formData.rawSalary, formData.frequency)
+                      //       .taxIncExclAdj,
+                      //     loanRepayments(
+                      //       "amp",
+                      //       formData.proposed_home_loans,
+                      //       formData.loanTerm
+                      //     ),
+                      //     Hem(
+                      //       "amp",
+                      //       formData.rawSalary,
+                      //       `${formData.numberOfApplicants == 0 ? "S" : "C"}${
+                      //         formData.numberOfDependant
+                      //       }`
+                      //     ) < formData.estimatedLivingExpense
+                      //       ? formData.estimatedLivingExpense
+                      //       : Hem(
+                      //           "amp",
+                      //           formData.rawSalary,
+                      //           `${
+                      //             formData.numberOfApplicants == 0 ? "S" : "C"
+                      //           }${formData.numberOfDependant}`
+                      //         ),
+                      //     0,
+                      //     0
+                      //   )
+                      // ).toFixed(2),
                     },
                   ].map((v, i) => (
                     <TableRow key={i}>
                       <TableCell>{i + 1}</TableCell>
                       <TableCell>{v.bankName}</TableCell>
 
-                      <TableCell>{v.maxLoan}</TableCell>
+                      <TableCell>{formatter.format(v.data.maxLoan)}</TableCell>
                       <TableCell>
                         {Math.floor(v.bankInterest * 100) / 100} %
                       </TableCell>
-                      <TableCell>{v.hem}</TableCell>
-                      <TableCell>{v.loanRepayment}</TableCell>
-                      <TableCell>{v.surp}</TableCell>
+                      <TableCell>{formatter.format(v.data.hem)}</TableCell>
+                      <TableCell>
+                        {formatter.format(v.data.MonthlyLoanRepayment)}
+                      </TableCell>
+                      <TableCell>{formatter.format(v.data.surplus)}</TableCell>
                       <TableCell>
                         {(
                           formData.proposed_home_loans / formData.rawSalary
                         ).toFixed(2)}
                       </TableCell>
                       <TableCell>
-                        {Math.round(
-                          textLevels(formData.rawSalary, "Annual")
-                            .taxIncExclAdj / 12
-                        ).toFixed(3)}
+                        {formatter.format(v.data.taxes.taxIncExclAdj / 12)}
                       </TableCell>
                     </TableRow>
                   ))
