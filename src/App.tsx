@@ -298,7 +298,7 @@ function App() {
                     },
                     {
                       bankName: "amp",
-                      bankInterest: 9.74,
+                      bankInterest: 6.74,
                       data: Cal("amp", formData, 6.74),
                     },
                   ].map((v, i) => (
