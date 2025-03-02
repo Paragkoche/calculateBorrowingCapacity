@@ -20,7 +20,7 @@ const HemTable: {
   };
 } = {
   nab: {
-    CO: [
+    C0: [
       2543, 2543, 2614, 2719, 2899, 3174, 3517, 3837, 4193, 4379, 4651, 5186,
       5821, 5983,
     ],
@@ -137,20 +137,12 @@ const HemTable: {
 
   },
 };
-type Frequency = "Weekly" | "Fortnightly" | "Monthly" | "Annual";
 
-const frequencyMap = {
-  Annual: 1,
-  Monthly: 12,
-  Fortnightly: 26,
-  Weekly: 52,
-};
 export const textLevels = (
   income: number,
-  frequency: Frequency,
   abjIncome = 0
 ) => {
-  const annualIncome: number = income * frequencyMap[frequency];
+  const annualIncome: number = income 
 
   
   const taxes: {
@@ -227,7 +219,6 @@ export const textLevels = (
 
 export const Hem = (bank: "nab" | "amp", income: number, rent: string) => {
   // console.log(rent.charAt(0));
-  
   let table = HemTable[bank];
 
   let index = 0;
@@ -277,5 +268,9 @@ export const Hem = (bank: "nab" | "amp", income: number, rent: string) => {
 
     return table[rent.charAt(0)+"Dep"][index]
   }
+  console.table(table)
+  console.table(table[rent])
+  console.log(rent,index,bank);
+  
   return table[rent][index];
 };

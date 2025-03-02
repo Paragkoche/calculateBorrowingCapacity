@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { formatter } from "./utility/borrowing";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,7 @@ import {
 import { Cal } from "./utility/allCals";
 import { Separator } from "./components/ui/separator";
 import { useTheme } from "./components/theme-provider";
+import { formatter } from "./lib/fomatter";
 
 type Frequency = "Weekly" | "Fortnightly" | "Monthly" | "Annual";
 const frequencies: Frequency[] = ["Weekly", "Fortnightly", "Monthly", "Annual"];
@@ -42,12 +43,15 @@ type formDataType = {
   incomeType: number;
   frequency: Frequency;
   rawSalary: number;
-  otherIncome: number;
   loanRepayments: number;
   expenseFrequency: Frequency;
   estimatedLivingExpense: number;
   proposed_home_loans: number;
+  join_rawSalary?: number;
+  bonus: number;
+  join_bonus?: number;
 };
+
 function App() {
   const [formData, setFormData] = useState<formDataType>({
     numberOfApplicants: 0,
@@ -56,11 +60,12 @@ function App() {
     incomeType: 0,
     frequency: "Monthly" as Frequency,
     rawSalary: 0,
-    otherIncome: 0,
     loanRepayments: 0,
     expenseFrequency: "Monthly" as Frequency,
     estimatedLivingExpense: 0,
     proposed_home_loans: 0,
+    join_rawSalary: 0,
+    bonus: 0,
   });
   const theme = useTheme();
 
@@ -85,6 +90,8 @@ function App() {
                   setFormData((data) => ({
                     ...data,
                     numberOfApplicants: Number(value) == 0 ? 0 : 1,
+                    join_rawSalary:
+                      Number(value) == 0 ? 0 : data.join_rawSalary,
                   }))
                 }
               >
@@ -183,18 +190,44 @@ function App() {
                   }))
                 }
               />
-
-              <Label>Other Income</Label>
+              <Label>bonus (YTD)</Label>
               <Input
                 type="number"
-                value={formData.otherIncome}
+                value={formData.bonus}
                 onChange={(e) =>
                   setFormData((data) => ({
                     ...data,
-                    otherIncome: Number(e.target.value),
+                    bonus: Number(e.target.value),
                   }))
                 }
               />
+
+              {formData.numberOfApplicants == 1 && (
+                <>
+                  <Label>Gross Salary (Join Application)</Label>
+                  <Input
+                    type="number"
+                    value={formData.join_rawSalary}
+                    onChange={(e) =>
+                      setFormData((data) => ({
+                        ...data,
+                        join_rawSalary: Number(e.target.value),
+                      }))
+                    }
+                  />
+                  <Label>bonus (YTD)</Label>
+                  <Input
+                    type="number"
+                    value={formData.join_bonus}
+                    onChange={(e) =>
+                      setFormData((data) => ({
+                        ...data,
+                        join_bonus: Number(e.target.value),
+                      }))
+                    }
+                  />
+                </>
+              )}
 
               <Separator />
               <h4 className="text-lg font-semibold">Expenses</h4>
@@ -252,6 +285,8 @@ function App() {
                 <TableHead>SURP</TableHead>
                 <TableHead>DTI</TableHead>
                 <TableHead>Net Income</TableHead>
+                {/* <TableHead>bonus</TableHead>
+                <TableHead>bonus join</TableHead> */}
               </TableHeader>
               <TableBody>
                 {formData.rawSalary !== 0 ? (
@@ -260,179 +295,11 @@ function App() {
                       bankName: "nab",
                       bankInterest: 5.75,
                       data: Cal("nab", formData, 5.75),
-                      // maxLoan: formatter.format(
-                      //   Math.max(
-                      //     calculateLoan(
-                      //       NextSurplus(
-                      //         textLevels(formData.rawSalary, formData.frequency)
-                      //           .taxIncExclAdj,
-                      //         loanRepayments(
-                      //           "nab",
-                      //           formData.proposed_home_loans,
-                      //           formData.loanTerm
-                      //         ),
-                      //         Hem(
-                      //           "nab",
-                      //           formData.rawSalary *
-                      //             frequencies_data[formData.frequency],
-                      //           `${
-                      //             formData.numberOfApplicants == 0 ? "S" : "C"
-                      //           }${formData.numberOfDependant}`
-                      //         ) < formData.estimatedLivingExpense
-                      //           ? formData.estimatedLivingExpense
-                      //           : Hem(
-                      //               "nab",
-                      //               formData.rawSalary *
-                      //                 frequencies_data[formData.frequency],
-                      //               `${
-                      //                 formData.numberOfApplicants == 0
-                      //                   ? "S"
-                      //                   : "C"
-                      //               }${formData.numberOfDependant}`
-                      //             ),
-                      //         0,
-                      //         0
-                      //       ),
-                      //       5.75 + 1,
-                      //       formData.loanTerm
-                      //     ),
-                      //     0
-                      //   )
-                      // ),
-                      // hem: formatter.format(
-                      //   Hem(
-                      //     "nab",
-                      //     formData.rawSalary *
-                      //       frequencies_data[formData.frequency],
-                      //     `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                      //       formData.numberOfDependant
-                      //     }`
-                      //   )
-                      // ),
-                      // loanRepayment: formatter.format(
-                      //   loanRepayments(
-                      //     "nab",
-                      //     formData.proposed_home_loans,
-                      //     formData.loanTerm
-                      //   )
-                      // ),
-                      // surp: NextSurplus(
-                      //   textLevels(formData.rawSalary, formData.frequency)
-                      //     .taxIncExclAdj,
-                      //   loanRepayments(
-                      //     "nab",
-                      //     formData.proposed_home_loans,
-                      //     formData.loanTerm
-                      //   ),
-                      //   Hem(
-                      //     "nab",
-                      //     formData.rawSalary *
-                      //       frequencies_data[formData.frequency],
-                      //     `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                      //       formData.numberOfDependant
-                      //     }`
-                      //   ) < formData.estimatedLivingExpense
-                      //     ? formData.estimatedLivingExpense
-                      //     : Hem(
-                      //         "nab",
-                      //         formData.rawSalary *
-                      //           frequencies_data[formData.frequency],
-                      //         `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                      //           formData.numberOfDependant
-                      //         }`
-                      //       ),
-                      //   0,
-                      //   0
-                      // ).toFixed(2),
                     },
                     {
                       bankName: "amp",
                       bankInterest: 6.5,
                       data: Cal("amp", formData, 6.5),
-
-                      // maxLoan: formatter.format(
-                      //   Math.max(
-                      //     calculateLoan(
-                      //       NextSurplus(
-                      //         textLevels(formData.rawSalary, formData.frequency)
-                      //           .taxIncExclAdj,
-                      //         loanRepayments(
-                      //           "amp",
-                      //           formData.proposed_home_loans,
-                      //           formData.loanTerm
-                      //         ),
-                      //         Hem(
-                      //           "amp",
-                      //           formData.rawSalary *
-                      //             frequencies_data[formData.frequency],
-                      //           `${
-                      //             formData.numberOfApplicants == 0 ? "S" : "C"
-                      //           }${formData.numberOfDependant}`
-                      //         ) < formData.estimatedLivingExpense
-                      //           ? formData.estimatedLivingExpense
-                      //           : Hem(
-                      //               "amp",
-                      //               formData.rawSalary *
-                      //                 frequencies_data[formData.frequency],
-                      //               `${
-                      //                 formData.numberOfApplicants == 0
-                      //                   ? "S"
-                      //                   : "C"
-                      //               }${formData.numberOfDependant}`
-                      //             ),
-                      //         0,
-                      //         0
-                      //       ),
-                      //       6.5 + 1,
-                      //       formData.loanTerm
-                      //     ),
-                      //     0
-                      //   )
-                      // ),
-                      // hem: formatter.format(
-                      //   Hem(
-                      //     "amp",
-                      //     formData.rawSalary,
-                      //     `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                      //       formData.numberOfDependant
-                      //     }`
-                      //   )
-                      // ),
-                      // loanRepayment: formatter.format(
-                      //   loanRepayments(
-                      //     "amp",
-                      //     formData.proposed_home_loans,
-                      //     formData.loanTerm
-                      //   )
-                      // ),
-                      // surp: Math.round(
-                      //   NextSurplus(
-                      //     textLevels(formData.rawSalary, formData.frequency)
-                      //       .taxIncExclAdj,
-                      //     loanRepayments(
-                      //       "amp",
-                      //       formData.proposed_home_loans,
-                      //       formData.loanTerm
-                      //     ),
-                      //     Hem(
-                      //       "amp",
-                      //       formData.rawSalary,
-                      //       `${formData.numberOfApplicants == 0 ? "S" : "C"}${
-                      //         formData.numberOfDependant
-                      //       }`
-                      //     ) < formData.estimatedLivingExpense
-                      //       ? formData.estimatedLivingExpense
-                      //       : Hem(
-                      //           "amp",
-                      //           formData.rawSalary,
-                      //           `${
-                      //             formData.numberOfApplicants == 0 ? "S" : "C"
-                      //           }${formData.numberOfDependant}`
-                      //         ),
-                      //     0,
-                      //     0
-                      //   )
-                      // ).toFixed(2),
                     },
                   ].map((v, i) => (
                     <TableRow key={i}>
@@ -465,6 +332,10 @@ function App() {
                       <TableCell>
                         {formatter.format(v.data.taxes.taxIncExclAdj / 12)}
                       </TableCell>
+                      {/* <TableCell>{formatter.format(v.data.bonus)}</TableCell>
+                      <TableCell>
+                        {formatter.format(v.data.join_bonus)}
+                      </TableCell> */}
                     </TableRow>
                   ))
                 ) : (
