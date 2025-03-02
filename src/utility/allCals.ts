@@ -23,7 +23,7 @@ type formDataType = {
   incomeType: number;
   frequency: Frequency;
   rawSalary: number;
-  
+   is_newLoan: boolean;
   loanRepayments: number;
   expenseFrequency: Frequency;
   estimatedLivingExpense: number;
@@ -31,6 +31,7 @@ type formDataType = {
   join_rawSalary?: number;
     bonus: number;
   join_bonus?: number;
+  loan_rate:number;
 };
 const frequencies_data: { [key in Frequency]: number } = {
   Annual: 1,
@@ -40,26 +41,50 @@ const frequencies_data: { [key in Frequency]: number } = {
 };
 const bonus = {
   nab:1,
-  amp:0.8
+  amp:0.8,
+  westpac:0.8
 }
-export const Cal= (bank:"nab" | "amp",data:formDataType,buffer:number)=>{
-    const application1 =( (data.rawSalary ) * frequencies_data[data.frequency]) + data.bonus * bonus[bank]
-    const application2 = (data.join_rawSalary ?? 0) * frequencies_data[data.frequency] +( data.join_bonus ?? 0 )* bonus[bank]
-    const salary = application1 + application2
-    const hem = Hem(bank,salary, `${data.numberOfApplicants == 0?"S":"C"}${data.numberOfDependant}`);
-    const taxes = textLevels(salary); 
-    const MonthlyLoanRepayment = loanRepayments(bank,data.proposed_home_loans,data.loanTerm);
-    const surplus = NextSurplus( taxes.taxIncExclAdj,MonthlyLoanRepayment,hem<data.estimatedLivingExpense ? data.estimatedLivingExpense : hem,0,0);
-    const maxLoan = calculateLoan(surplus,buffer+1,data.loanTerm);
+export const Cal = (
+  bank: "nab" | "amp" | "westpac",
+  data: formDataType,
+  buffer: number
+) => {
+  const application1 =
+    data.rawSalary * frequencies_data[data.frequency] +
+    data.bonus * bonus[bank];
+  const application2 =
+    (data.join_rawSalary ?? 0) * frequencies_data[data.frequency] +
+    (data.join_bonus ?? 0) * bonus[bank];
+  const salary = application1 + application2;
+  const hem = Hem(
+    bank,
+    salary,
+    `${data.numberOfApplicants == 0 ? "S" : "C"}${data.numberOfDependant}`
+  );
+  const taxes = textLevels(bank, salary);
+  const MonthlyLoanRepayment = loanRepayments(
+    bank,
+    data.proposed_home_loans,
+    data.loanTerm,
+    data.loan_rate,
+    data.is_newLoan ? 0.01 : 0.03
+  );
+  const surplus = NextSurplus(
+    taxes.taxIncExclAdj,
+    MonthlyLoanRepayment,
+    hem < data.estimatedLivingExpense ? data.estimatedLivingExpense : hem,
+    0,
+    0
+  );
+  const maxLoan = calculateLoan(surplus, buffer + 1, data.loanTerm);
 
-    return {
-        taxes,
-        hem,
-        MonthlyLoanRepayment,
-        surplus,
-        maxLoan,
-        bonus: data.bonus * bonus[bank],
-        join_bonus: ( data.join_bonus ?? 0 )* bonus[bank]
-    }
-
-}
+  return {
+    taxes,
+    hem,
+    MonthlyLoanRepayment,
+    surplus,
+    maxLoan: maxLoan >= 0 ? maxLoan : 0,
+    bonus: data.bonus * bonus[bank],
+    join_bonus: (data.join_bonus ?? 0) * bonus[bank],
+  };
+};

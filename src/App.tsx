@@ -30,12 +30,12 @@ import { formatter } from "./lib/fomatter";
 
 type Frequency = "Weekly" | "Fortnightly" | "Monthly" | "Annual";
 const frequencies: Frequency[] = ["Weekly", "Fortnightly", "Monthly", "Annual"];
-// const frequencies_data: { [key in Frequency]: number } = {
-//   Annual: 1,
-//   Monthly: 12,
-//   Fortnightly: 26,
-//   Weekly: 52,
-// };
+const frequencies_data: { [key in Frequency]: number } = {
+  Annual: 1,
+  Monthly: 12,
+  Fortnightly: 26,
+  Weekly: 52,
+};
 type formDataType = {
   numberOfApplicants: 1 | 0;
   numberOfDependant: number;
@@ -50,6 +50,8 @@ type formDataType = {
   join_rawSalary?: number;
   bonus: number;
   join_bonus?: number;
+  is_newLoan: boolean;
+  loan_rate: number;
 };
 
 function App() {
@@ -66,6 +68,8 @@ function App() {
     proposed_home_loans: 0,
     join_rawSalary: 0,
     bonus: 0,
+    is_newLoan: true,
+    loan_rate: 0,
   });
   const theme = useTheme();
 
@@ -104,6 +108,28 @@ function App() {
                   </Label>
                 </div>
               </RadioGroup>
+              <Label>
+                Is this application eligible for Alternative Refinance
+                Assessment?
+              </Label>
+              <RadioGroup
+                value={formData.is_newLoan ? "1" : "0"}
+                onValueChange={(value) =>
+                  setFormData((data) => ({
+                    ...data,
+                    is_newLoan: value == "1" ? true : false,
+                  }))
+                }
+              >
+                <div className="flex gap-4">
+                  <Label className="flex items-center gap-2">
+                    <RadioGroupItem value="1" /> Yes
+                  </Label>
+                  <Label className="flex items-center gap-2">
+                    <RadioGroupItem value="0" /> No
+                  </Label>
+                </div>
+              </RadioGroup>
 
               <Label>No. of Dependants</Label>
               <Select
@@ -118,7 +144,7 @@ function App() {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[...Array(7)].map((_, i) => (
+                  {[...Array(10)].map((_, i) => (
                     <SelectItem key={i} value={i.toString()}>
                       {i}
                     </SelectItem>
@@ -148,6 +174,17 @@ function App() {
                   setFormData((data) => ({
                     ...data,
                     proposed_home_loans: Number(e.target.value),
+                  }))
+                }
+              />
+              <Label>Rant</Label>
+              <Input
+                type="number"
+                value={formData.loan_rate}
+                onChange={(e) =>
+                  setFormData((data) => ({
+                    ...data,
+                    loan_rate: Number(e.target.value),
                   }))
                 }
               />
@@ -301,6 +338,11 @@ function App() {
                       bankInterest: 6.74,
                       data: Cal("amp", formData, 6.74),
                     },
+                    {
+                      bankName: "westpac",
+                      bankInterest: 6.22,
+                      data: Cal("westpac", formData, 6.22),
+                    },
                   ].map((v, i) => (
                     <TableRow key={i}>
                       <TableCell>{i + 1}</TableCell>
@@ -326,7 +368,9 @@ function App() {
                       <TableCell>{formatter.format(v.data.surplus)}</TableCell>
                       <TableCell>
                         {(
-                          formData.proposed_home_loans / formData.rawSalary
+                          formData.proposed_home_loans /
+                          (formData.rawSalary *
+                            frequencies_data[formData.frequency])
                         ).toFixed(2)}
                       </TableCell>
                       <TableCell>
