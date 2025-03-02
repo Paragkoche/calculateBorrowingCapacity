@@ -293,13 +293,13 @@ function App() {
                   [
                     {
                       bankName: "nab",
-                      bankInterest: 5.75,
-                      data: Cal("nab", formData, 5.75),
+                      bankInterest: 6.19,
+                      data: Cal("nab", formData, 6.19),
                     },
                     {
                       bankName: "amp",
-                      bankInterest: 6.5,
-                      data: Cal("amp", formData, 6.5),
+                      bankInterest: 9.74,
+                      data: Cal("amp", formData, 6.74),
                     },
                   ].map((v, i) => (
                     <TableRow key={i}>
