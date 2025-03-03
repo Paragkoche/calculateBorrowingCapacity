@@ -38,22 +38,26 @@ const frequencies_data: { [key in Frequency]: number } = {
   Fortnightly: 26,
   Weekly: 52,
 };
-const bonus = {
+const bonus: { [key: string]: number } = {
   nab: 1,
   amp: 0.8,
   westpac: 0.8,
+  alex: 0.8,
+  anz: 0.8,
+  amb: 0.8,
 };
 export const Cal = (
-  bank: "nab" | "amp" | "westpac",
+  bank: string,
   data: formDataType,
-  buffer: number,
-  interestRate: number = 0.03
+  interestRate: number,
+  buffer: number = 0.03
 ) => {
   const application1 =
     data.rawSalary * frequencies_data[data.frequency] +
     data.bonus * bonus[bank];
   const application2 =
-    (data.join_rawSalary ?? 0) * frequencies_data[data.frequency] +
+    (data.numberOfApplicants == 1 ? data.join_rawSalary ?? 0 : 0) *
+      frequencies_data[data.frequency] +
     (data.join_bonus ?? 0) * bonus[bank];
   const salary = application1 + application2;
   const hem = Hem(
@@ -67,18 +71,18 @@ export const Cal = (
     data.proposed_home_loans,
     data.loanTerm,
     data.loan_rate,
-    data.is_newLoan ? 0.01 : interestRate
+    data.is_newLoan ? 0.01 : buffer
   );
   const surplus = NextSurplus(
     taxes.taxIncExclAdj,
-    MonthlyLoanRepayment,
+    MonthlyLoanRepayment.data,
     hem < data.estimatedLivingExpense ? data.estimatedLivingExpense : hem,
     0,
     0
   );
   const maxLoan = calculateLoan(
     surplus,
-    buffer + interestRate * 100,
+    interestRate + buffer * 100,
     data.loanTerm
   );
 

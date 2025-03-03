@@ -94,8 +94,6 @@ function App() {
                   setFormData((data) => ({
                     ...data,
                     numberOfApplicants: Number(value) == 0 ? 0 : 1,
-                    join_rawSalary:
-                      Number(value) == 0 ? 0 : data.join_rawSalary,
                   }))
                 }
               >
@@ -316,6 +314,7 @@ function App() {
                 <TableHead>Sr</TableHead>
                 <TableHead>Bank Name</TableHead>
                 <TableHead>Max Loan</TableHead>
+                <TableHead>Bank Interest Rate</TableHead>
                 <TableHead>Interest Rate</TableHead>
                 <TableHead>Assessment rate</TableHead>
                 <TableHead>HEM</TableHead>
@@ -331,18 +330,33 @@ function App() {
                   [
                     {
                       bankName: "nab",
-                      bankInterest: 6.19,
-                      data: Cal("nab", formData, 6.19, 0.03),
+                      bankInterest: 5.75,
+                      data: Cal("nab", formData, 5.75, 0.03),
                     },
                     {
                       bankName: "amp",
-                      bankInterest: 6.74,
-                      data: Cal("amp", formData, 6.74, 0.03),
+                      bankInterest: 6.5,
+                      data: Cal("amp", formData, 6.5, 0.03),
                     },
                     {
                       bankName: "westpac",
-                      bankInterest: 6.22,
-                      data: Cal("westpac", formData, 6.22, 0.03),
+                      bankInterest: 5.05,
+                      data: Cal("westpac", formData, 5.05, 0.03),
+                    },
+                    {
+                      bankName: "alex",
+                      bankInterest: 5.05,
+                      data: Cal("alex", formData, 5.05, 0.03),
+                    },
+                    {
+                      bankName: "anz",
+                      bankInterest: 5.05,
+                      data: Cal("anz", formData, 5.05, 0.03),
+                    },
+                    {
+                      bankName: "amb",
+                      bankInterest: 5.05,
+                      data: Cal("amb", formData, 5.05, 0.03),
                     },
                   ].map((v, i) => (
                     <TableRow key={i}>
@@ -359,14 +373,18 @@ function App() {
                       </TableCell>
 
                       <TableCell>{formatter.format(v.data.maxLoan)}</TableCell>
+                      <TableCell>{v.bankInterest}%</TableCell>
+                      <TableCell>{formData.loan_rate}%</TableCell>
                       <TableCell>
-                        {Math.floor(v.bankInterest * 100) / 100} %
+                        {(v.data.MonthlyLoanRepayment.rate.rate1 * 100).toFixed(
+                          2
+                        )}
+                        %
                       </TableCell>
-                      <TableCell>{formData.is_newLoan ? 1 : 3}%</TableCell>
                       <TableCell>{formatter.format(v.data.hem)}</TableCell>
 
                       <TableCell>
-                        {formatter.format(v.data.MonthlyLoanRepayment)}
+                        {formatter.format(v.data.MonthlyLoanRepayment.data)}
                       </TableCell>
                       <TableCell>{formatter.format(v.data.surplus)}</TableCell>
                       <TableCell>

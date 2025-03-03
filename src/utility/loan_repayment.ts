@@ -20,14 +20,18 @@ import { PMT } from "@/lib/excal";
 // };
 
 export const loanRepayments = (
-  bank: "nab" | "amp" | "westpac",
+  bank: string,
   loan_amount: number,
   loan_term: number,
   Working_Servicing_Rate: number,
   HL_Servicing_Buffer: number = 0.03,
   io_term = 0
 ) => {
-  const servicingRate = {
+  const servicingRate: {
+    [key: string]: {
+      [key: string]: number;
+    };
+  } = {
     nab: {
       rate1: Math.max(
         5.75 / 100,
@@ -54,6 +58,24 @@ export const loanRepayments = (
         Working_Servicing_Rate / 100 + HL_Servicing_Buffer
       ),
     },
+    alex: {
+      rate1: Math.max(
+        6.5 / 100,
+        Working_Servicing_Rate / 100 + HL_Servicing_Buffer
+      ),
+    },
+    anz: {
+      rate1: Math.max(
+        6.5 / 100,
+        Working_Servicing_Rate / 100 + HL_Servicing_Buffer
+      ),
+    },
+    amb: {
+      rate1: Math.max(
+        6.5 / 100,
+        Working_Servicing_Rate / 100 + HL_Servicing_Buffer
+      ),
+    },
   };
   console.table(servicingRate[bank]);
 
@@ -61,14 +83,16 @@ export const loanRepayments = (
   // console.log(loan_amount);
 
   try {
-    return (
-      PMT(
-        servicingRate[bank].rate1 / 12,
-        (loan_term - io_term) * 12,
-        loan_amount
-      ) * -1
-    );
+    return {
+      data:
+        PMT(
+          servicingRate[bank].rate1 / 12,
+          (loan_term - io_term) * 12,
+          loan_amount
+        ) * -1,
+      rate: servicingRate[bank],
+    };
   } catch (e) {
-    return 0;
+    return { data: 0, rate: servicingRate[bank] };
   }
 };
