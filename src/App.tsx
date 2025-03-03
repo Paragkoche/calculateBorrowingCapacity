@@ -177,7 +177,7 @@ function App() {
                   }))
                 }
               />
-              <Label>Rant</Label>
+              <Label>Rate</Label>
               <Input
                 type="number"
                 value={formData.loan_rate}
@@ -317,6 +317,7 @@ function App() {
                 <TableHead>Bank Name</TableHead>
                 <TableHead>Max Loan</TableHead>
                 <TableHead>Interest Rate</TableHead>
+                <TableHead>Assessment rate</TableHead>
                 <TableHead>HEM</TableHead>
                 <TableHead>Loan Repayment</TableHead>
                 <TableHead>SURP</TableHead>
@@ -331,17 +332,17 @@ function App() {
                     {
                       bankName: "nab",
                       bankInterest: 6.19,
-                      data: Cal("nab", formData, 6.19),
+                      data: Cal("nab", formData, 6.19, 0.03),
                     },
                     {
                       bankName: "amp",
                       bankInterest: 6.74,
-                      data: Cal("amp", formData, 6.74),
+                      data: Cal("amp", formData, 6.74, 0.03),
                     },
                     {
                       bankName: "westpac",
                       bankInterest: 6.22,
-                      data: Cal("westpac", formData, 6.22),
+                      data: Cal("westpac", formData, 6.22, 0.03),
                     },
                   ].map((v, i) => (
                     <TableRow key={i}>
@@ -361,7 +362,9 @@ function App() {
                       <TableCell>
                         {Math.floor(v.bankInterest * 100) / 100} %
                       </TableCell>
+                      <TableCell>{formData.is_newLoan ? 1 : 3}%</TableCell>
                       <TableCell>{formatter.format(v.data.hem)}</TableCell>
+
                       <TableCell>
                         {formatter.format(v.data.MonthlyLoanRepayment)}
                       </TableCell>
@@ -376,6 +379,7 @@ function App() {
                       <TableCell>
                         {formatter.format(v.data.taxes.taxIncExclAdj / 12)}
                       </TableCell>
+
                       {/* <TableCell>{formatter.format(v.data.bonus)}</TableCell>
                       <TableCell>
                         {formatter.format(v.data.join_bonus)}

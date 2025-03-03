@@ -1,4 +1,3 @@
-
 import { Hem, textLevels } from "./hem_cal";
 import { loanRepayments } from "./loan_repayment";
 import { NextSurplus } from "./Net_Surplus";
@@ -23,15 +22,15 @@ type formDataType = {
   incomeType: number;
   frequency: Frequency;
   rawSalary: number;
-   is_newLoan: boolean;
+  is_newLoan: boolean;
   loanRepayments: number;
   expenseFrequency: Frequency;
   estimatedLivingExpense: number;
   proposed_home_loans: number;
   join_rawSalary?: number;
-    bonus: number;
+  bonus: number;
   join_bonus?: number;
-  loan_rate:number;
+  loan_rate: number;
 };
 const frequencies_data: { [key in Frequency]: number } = {
   Annual: 1,
@@ -40,14 +39,15 @@ const frequencies_data: { [key in Frequency]: number } = {
   Weekly: 52,
 };
 const bonus = {
-  nab:1,
-  amp:0.8,
-  westpac:0.8
-}
+  nab: 1,
+  amp: 0.8,
+  westpac: 0.8,
+};
 export const Cal = (
   bank: "nab" | "amp" | "westpac",
   data: formDataType,
-  buffer: number
+  buffer: number,
+  interestRate: number = 0.03
 ) => {
   const application1 =
     data.rawSalary * frequencies_data[data.frequency] +
@@ -67,7 +67,7 @@ export const Cal = (
     data.proposed_home_loans,
     data.loanTerm,
     data.loan_rate,
-    data.is_newLoan ? 0.01 : 0.03
+    data.is_newLoan ? 0.01 : interestRate
   );
   const surplus = NextSurplus(
     taxes.taxIncExclAdj,
@@ -76,7 +76,11 @@ export const Cal = (
     0,
     0
   );
-  const maxLoan = calculateLoan(surplus, buffer + 1, data.loanTerm);
+  const maxLoan = calculateLoan(
+    surplus,
+    buffer + interestRate * 100,
+    data.loanTerm
+  );
 
   return {
     taxes,
